@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">PARCIAL 3  BLE</string>
     <string name="action_settings">Settings</string>
+    <string name="action_StartLEScan">Start BLE Scan</string>
+    <string name="action_Connect">Connect BLE Device</string>
+    <string name="action_StopLEScan">Stop BLE Scan</string>
+    <string name="action_Disconnect">Disconnect BLE Device</string>
 </resources>
