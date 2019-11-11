@@ -2,6 +2,7 @@ package com.example.bledemo.adapters;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
@@ -43,21 +44,27 @@ public class BluetoothDeviceListAdapter extends ArrayAdapter<ScanResult> {
         View rowView= inflater.inflate(R.layout.device_list_item, null, true);
 
         TextView txtTitle = (TextView) rowView.findViewById(R.id.device_list_item_text_view);
-        String signalP = scanResultList.get(position).getDevice().EXTRA_RSSI;
-        txtTitle.setText(scanResultList.get(position).getDevice().getName()+" \n MAC: "+scanResultList.get(position).getDevice().getAddress()+" \n Señal: "+scanResultList.get(position).getRssi());
+        TextView txtTitle2 = (TextView) rowView.findViewById(R.id.device_list_item_text_view2);
+        txtTitle.setText(scanResultList.get(position).getDevice().getAddress());
         String deviceName=scanResultList.get(position).getDevice().getName();
-        TextView deviceNameTxtView = (TextView) rowView.findViewById(R.id.device_list_item_text_view2);
-        deviceNameTxtView.setText(deviceName);
+        txtTitle2.setText("Name: "+scanResultList.get(position).getDevice().getName()+" \n Señal: "+scanResultList.get(position).getRssi());
+        // TextView deviceNameTxtView = (TextView) rowView.findViewById(R.id.device_list_item_text_view2);
+        //deviceNameTxtView.setText(deviceName);
+
 
         txtTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String address=((TextView) view.findViewById(R.id.device_list_item_text_view)).getText()+"";
-                Toast.makeText(context,"selected address: "+address,Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Connecting proccess: "+address,Toast.LENGTH_LONG).show();
                 mainActivity.bleManager.connectToGATTServer(mainActivity.bleManager.getByAddress(address));
-            }
+
+             }
         });
 
         return rowView;
     }
+
+
+
 }

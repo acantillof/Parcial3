@@ -8,6 +8,26 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_StartScan"
+        android:orderInCategory="100"
+        android:title="@string/action_StartLEScan"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_StopScan"
+        android:orderInCategory="100"
+        android:title="@string/action_StopLEScan"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_ConnectD"
+        android:orderInCategory="100"
+        android:title="@string/action_Connect"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_DisconnectD"
+        android:orderInCategory="100"
+        android:title="@string/action_Disconnect"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_logs"

@@ -20,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -176,15 +177,20 @@ public class BLEManager extends ScanCallback {
 
     public void connectToGATTServer(BluetoothDevice device){
         try{
+
             device.connectGatt(this.context, false, new BluetoothGattCallback() {
+
+
                 @Override
                 public void onPhyUpdate(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
                     super.onPhyUpdate(gatt, txPhy, rxPhy, status);
+
                 }
 
                 @Override
                 public void onPhyRead(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
                     super.onPhyRead(gatt, txPhy, rxPhy, status);
+
                 }
 
                 @Override
@@ -192,6 +198,7 @@ public class BLEManager extends ScanCallback {
                                                     int status, int newState) {
                     super.onConnectionStateChange(gatt, status, newState);
                     if(newState==BluetoothGatt.STATE_CONNECTED){
+                        Toast.makeText(context,"Device Connected",Toast.LENGTH_LONG).show();
                         gatt.discoverServices();
                     }
                 }
@@ -242,9 +249,28 @@ public class BLEManager extends ScanCallback {
                     super.onMtuChanged(gatt, mtu, status);
                 }
             },BluetoothDevice.TRANSPORT_LE);
-        }catch (Exception error){
 
+        }catch (Exception error){
+            Toast.makeText(context," "+error.getMessage(),Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static boolean isCharacteristicWritable(BluetoothGattCharacteristic pChar) {
+        return (pChar.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
+    }
+
+    /**
+     * @return Returns <b>true</b> if property is Readable
+     */
+    public static boolean isCharacteristicReadable(BluetoothGattCharacteristic pChar) {
+        return ((pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0);
+    }
+
+    /**
+     * @return Returns <b>true</b> if property is supports notification
+     */
+    public boolean isCharacteristicNotifiable(BluetoothGattCharacteristic pChar) {
+        return (pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
     }
 
 }
