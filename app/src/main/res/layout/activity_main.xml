@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
+         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -21,11 +21,11 @@
     </com.google.android.material.appbar.AppBarLayout>
     <include layout="@layout/content_main" />
 
-    <ListView
+    <!--<ListView
         android:id="@+id/devices_list_id"
         android:layout_width="match_parent"
         android:layout_height="730dp"
-        android:textAlignment="center"></ListView>
+        android:textAlignment="center"></ListView>-->
 
 
 

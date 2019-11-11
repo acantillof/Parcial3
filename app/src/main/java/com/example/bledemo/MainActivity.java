@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.example.bledemo.adapters.BluetoothDeviceListAdapter;
 import com.example.bledemo.ble.BLEManager;
 import com.example.bledemo.ble.BLEManagerCallerInterface;
+import com.example.bledemo.log.LogManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -27,14 +28,17 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
 
     public BLEManager bleManager;
     private MainActivity mainActivity;
+    public static LogManager logManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        logManager = new LogManager();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        logManager.addRegister("Aplication initiated.");
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
         }
         mainActivity=this;
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -144,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
             @Override
             public void run() {
                 try{
-                    ListView listView=(ListView)findViewById(R.id.devices_list_id);
+                    ListView listView= (ListView)findViewById(R.id.devices_list_id);
                     BluetoothDeviceListAdapter adapter=new BluetoothDeviceListAdapter(getApplicationContext(),bleManager.scanResults,mainActivity);
                     listView.setAdapter(adapter);
 
@@ -156,5 +161,10 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
         });
 
 
+    }
+
+    public void ToLogActivity(MenuItem item) {
+        Intent intent = new Intent(getApplicationContext(),LogActivity.class);
+        startActivity(intent);
     }
 }
