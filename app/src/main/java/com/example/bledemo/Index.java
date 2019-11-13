@@ -16,20 +16,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.bledemo.log.LogManager;
+
 public class Index extends AppCompatActivity {
     Button StartScan, StopScan, ConnectDev, DisconnectDev, TurnOn, TurnOff, exit;
     BluetoothAdapter BluetoothCon;
     ImageView bleIm;
     TextView INF;
+    public static LogManager logManager;
+
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
     private static final int REQUEST_DISABLE_BT = 2;
 
-    private  BroadcastReceiver mReceiver;
+    private BroadcastReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
+        logManager = new LogManager();
+        logManager.addRegister("Aplication initiated.");
         StartScan = findViewById(R.id.button);
         StopScan = findViewById(R.id.button2);
         ConnectDev = findViewById(R.id.button3);
@@ -92,10 +98,12 @@ public class Index extends AppCompatActivity {
                             bleIm.setImageResource(R.drawable.ic_action_bleoff);
                             TurnOn.setVisibility(View.VISIBLE);
                             TurnOff.setVisibility(View.GONE);
+                            logManager.addRegister("BLE turn off.");
 //                            Toast.makeText(getApplicationContext(), "Turning OFF BLE", Toast.LENGTH_LONG);
 
                             break;
                         case BluetoothAdapter.STATE_TURNING_OFF:
+                            logManager.addRegister("BLE turning off.");
                             break;
                         case BluetoothAdapter.STATE_ON:
                             StartScan.setVisibility(View.VISIBLE);
@@ -105,8 +113,10 @@ public class Index extends AppCompatActivity {
                             bleIm.setImageResource(R.drawable.ic_action_blue);
                             TurnOn.setVisibility(View.GONE);
                             TurnOff.setVisibility(View.VISIBLE);
+                            logManager.addRegister("BLE turn on.");
 
                         case BluetoothAdapter.STATE_TURNING_ON:
+                            logManager.addRegister("BLE turning on.");
                             break;
                     }
                 }
@@ -125,7 +135,6 @@ public class Index extends AppCompatActivity {
                 // change
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
-
 
             }
         });
