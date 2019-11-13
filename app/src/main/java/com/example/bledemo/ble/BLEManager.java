@@ -43,6 +43,7 @@ public class BLEManager extends ScanCallback {
     private BluetoothLeScanner bluetoothLeScanner;
     public List<ScanResult> scanResults=new ArrayList<>();
     BluetoothGattCallback prueba;
+    BluetoothGatt lastBluetoothGatt;
     prueba
     public BLEManager(BLEManagerCallerInterface caller, Context context) {
         this.caller = caller;
@@ -273,33 +274,7 @@ public class BLEManager extends ScanCallback {
         }
 
     }
-    public boolean writeCharacteristic(BluetoothGattCharacteristic characteristic,byte[] data, BluetoothGatt lastBluetoothGatt){
-        try{
-            if(characteristic==null) return false;
-            characteristic.setValue(data);
-            return lastBluetoothGatt.writeCharacteristic(characteristic);
-        }catch (Exception error){
-
-            for (BluetoothHelperCallerInterface current:callers
-            ) {
-                current.bluetoothHelperErrorThrown(error);
-            }
-        }
-        return false;
-    }
-    public boolean readCharacteristic(BluetoothGattCharacteristic characteristic, BluetoothGatt lastBluetoothGatt){
-        try{
-            if(characteristic==null) return false;
-            return lastBluetoothGatt.readCharacteristic(characteristic);
-        }catch (Exception error){
-            for (BluetoothHelperCallerInterface current:callers
-            ) {
-                current.bluetoothHelperErrorThrown(error);
-            }
-        }
-        return false;
-    }
-    private void searchAndSetAllNotifyAbleCharacteristics(BluetoothGatt lastBluetoothGatt) {
+    private void searchAndSetAllNotifyAbleCharacteristics() {
         try {
 
             if(lastBluetoothGatt!=null){
@@ -315,10 +290,10 @@ public class BLEManager extends ScanCallback {
                                                 currentDescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                                                 lastBluetoothGatt.writeDescriptor(currentDescriptor);
                                             }catch (Exception internalError){
-                                                for (BluetoothHelperCallerInterface current:callers
+                                                /*for (BluetoothHelperCallerInterface current:callers
                                                 ) {
                                                     current.bluetoothHelperErrorThrown(internalError);
-                                                }
+                                                }*/
                                             }
                                         }
                                     }
@@ -330,14 +305,26 @@ public class BLEManager extends ScanCallback {
                 }
             }
         } catch (Exception error){
-            for (BluetoothHelperCallerInterface current:callers
+          /*  for (BluetoothHelperCallerInterface current:callers
             ) {
                 current.bluetoothHelperErrorThrown(error);
             }
-        }
+        }*/
 
     }
-
+}
+    public boolean readCharacteristic(BluetoothGattCharacteristic characteristic){
+        try{
+            if(characteristic==null) return false;
+            return lastBluetoothGatt.readCharacteristic(characteristic);
+        }catch (Exception error){
+            /*for (BluetoothHelperCallerInterface current:callers
+            ) {
+                current.bluetoothHelperErrorThrown(error);
+            }*/
+        }
+        return false;
+    }
     public boolean isCharacteristicWriteable(BluetoothGattCharacteristic characteristic) {
         return (characteristic.getProperties() &
                 (BluetoothGattCharacteristic.PROPERTY_WRITE
@@ -351,5 +338,18 @@ public class BLEManager extends ScanCallback {
     public boolean isCharacteristicNotifiable(BluetoothGattCharacteristic characteristic) {
         return ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0);
     }
+    public boolean writeCharacteristic(BluetoothGattCharacteristic characteristic,byte[] data){
+        try{
+            if(characteristic==null) return false;
+            characteristic.setValue(data);
+            return lastBluetoothGatt.writeCharacteristic(characteristic);
+        }catch (Exception error){
 
+            /*for (BluetoothHelperCallerInterface current:callers
+            ) {
+                current.bluetoothHelperErrorThrown(error);
+            }*/
+        }
+        return false;
+    }
 }
