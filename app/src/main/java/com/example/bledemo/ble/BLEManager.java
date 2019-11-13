@@ -130,11 +130,7 @@ public class BLEManager extends ScanCallback {
     }
 
     public void bluetoothON(Activity activity){
-        try{
 
-        }catch(Exception error){
-
-        }
         Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         activity.startActivityForResult(intent,REQUEST_ENABLE_BTN);
     }
@@ -264,9 +260,12 @@ public class BLEManager extends ScanCallback {
                 }
             },BluetoothDevice.TRANSPORT_LE);
 
+             MainActivity.ShowToast(context, ""+device.describeContents());
+
         }catch (Exception error){
-            Toast.makeText(context," "+error.getMessage(),Toast.LENGTH_LONG).show();
+           MainActivity.ShowToast(context, error.getMessage());
         }
+
     }
 
     public static boolean isCharacteristicWritable(BluetoothGattCharacteristic pChar) {
