@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -42,7 +43,8 @@ public class BLEManager extends ScanCallback {
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
     public List<ScanResult> scanResults=new ArrayList<>();
-
+    BluetoothGattCallback prueba;
+    prueba
     public BLEManager(BLEManagerCallerInterface caller, Context context) {
         this.caller = caller;
         this.context = context;
@@ -132,11 +134,7 @@ public class BLEManager extends ScanCallback {
     }
 
     public void bluetoothON(Activity activity){
-        try{
 
-        }catch(Exception error){
-
-        }
         Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         activity.startActivityForResult(intent,REQUEST_ENABLE_BTN);
     }
@@ -208,6 +206,7 @@ public class BLEManager extends ScanCallback {
     public void connectToGATTServer(BluetoothDevice device){
         try{
 
+            device.connectGatt(this.context,false,this).
             device.connectGatt(this.context, false, new BluetoothGattCallback() {
 
 
@@ -282,29 +281,93 @@ public class BLEManager extends ScanCallback {
                 public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
                     super.onMtuChanged(gatt, mtu, status);
                 }
+
             },BluetoothDevice.TRANSPORT_LE);
 
+             MainActivity.ShowToast(context, ""+device.describeContents());
+
         }catch (Exception error){
-            Toast.makeText(context," "+error.getMessage(),Toast.LENGTH_LONG).show();
+           MainActivity.ShowToast(context, error.getMessage());
         }
+
+    }
+    public boolean writeCharacteristic(BluetoothGattCharacteristic characteristic,byte[] data, BluetoothGatt lastBluetoothGatt){
+        try{
+            if(characteristic==null) return false;
+            characteristic.setValue(data);
+            return lastBluetoothGatt.writeCharacteristic(characteristic);
+        }catch (Exception error){
+
+            for (BluetoothHelperCallerInterface current:callers
+            ) {
+                current.bluetoothHelperErrorThrown(error);
+            }
+        }
+        return false;
+    }
+    public boolean readCharacteristic(BluetoothGattCharacteristic characteristic, BluetoothGatt lastBluetoothGatt){
+        try{
+            if(characteristic==null) return false;
+            return lastBluetoothGatt.readCharacteristic(characteristic);
+        }catch (Exception error){
+            for (BluetoothHelperCallerInterface current:callers
+            ) {
+                current.bluetoothHelperErrorThrown(error);
+            }
+        }
+        return false;
+    }
+    private void searchAndSetAllNotifyAbleCharacteristics(BluetoothGatt lastBluetoothGatt) {
+        try {
+
+            if(lastBluetoothGatt!=null){
+                for(BluetoothGattService currentService: lastBluetoothGatt.getServices()){
+                    if(currentService!=null){
+                        for(BluetoothGattCharacteristic currentCharacteristic:currentService.getCharacteristics()){
+                            if(currentCharacteristic!=null){
+                                if(isCharacteristicNotifiable(currentCharacteristic)){
+                                    lastBluetoothGatt.setCharacteristicNotification(currentCharacteristic, true);
+                                    for(BluetoothGattDescriptor currentDescriptor:currentCharacteristic.getDescriptors()){
+                                        if(currentDescriptor!=null){
+                                            try {
+                                                currentDescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                                lastBluetoothGatt.writeDescriptor(currentDescriptor);
+                                            }catch (Exception internalError){
+                                                for (BluetoothHelperCallerInterface current:callers
+                                                ) {
+                                                    current.bluetoothHelperErrorThrown(internalError);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception error){
+            for (BluetoothHelperCallerInterface current:callers
+            ) {
+                current.bluetoothHelperErrorThrown(error);
+            }
+        }
+
     }
 
-    public static boolean isCharacteristicWritable(BluetoothGattCharacteristic pChar) {
-        return (pChar.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
+    public boolean isCharacteristicWriteable(BluetoothGattCharacteristic characteristic) {
+        return (characteristic.getProperties() &
+                (BluetoothGattCharacteristic.PROPERTY_WRITE
+                        | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
     }
 
-    /**
-     * @return Returns <b>true</b> if property is Readable
-     */
-    public static boolean isCharacteristicReadable(BluetoothGattCharacteristic pChar) {
-        return ((pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0);
+    public boolean isCharacteristicReadable(BluetoothGattCharacteristic characteristic) {
+        return ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0);
     }
 
-    /**
-     * @return Returns <b>true</b> if property is supports notification
-     */
-    public boolean isCharacteristicNotifiable(BluetoothGattCharacteristic pChar) {
-        return (pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+    public boolean isCharacteristicNotifiable(BluetoothGattCharacteristic characteristic) {
+        return ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0);
     }
 
 }

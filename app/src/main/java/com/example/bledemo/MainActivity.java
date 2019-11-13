@@ -198,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
                 adapter.notifyDataSetChanged();
             }
         });
+        ShowToast(mainActivity,"Error realizando el scanner");
     }
 
     @Override

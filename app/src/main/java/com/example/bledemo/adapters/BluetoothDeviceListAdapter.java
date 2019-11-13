@@ -57,8 +57,8 @@ public class BluetoothDeviceListAdapter extends ArrayAdapter<ScanResult> {
             public void onClick(View view) {
                 String address=((TextView) view.findViewById(R.id.device_list_item_text_view)).getText()+"";
                 Toast.makeText(context,"Connecting proccess: "+address,Toast.LENGTH_LONG).show();
+               // mainActivity.bleManager.connectToGATTServer(mainActivity.bleManager.getByAddress(address));
                 mainActivity.bleManager.connectToGATTServer(mainActivity.bleManager.getByAddress(address));
-
              }
         });
 
