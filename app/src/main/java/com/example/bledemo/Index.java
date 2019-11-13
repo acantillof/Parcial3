@@ -2,6 +2,7 @@ package com.example.bledemo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 public class Index extends AppCompatActivity {
     Button StartScan, StopScan, ConnectDev, DisconnectDev, TurnOn, TurnOff, exit;
     BluetoothAdapter BluetoothCon;
+    Activity mainactivity;
     ImageView bleIm;
     TextView INF;
     private static final int REQUEST_ENABLE_BT = 0;
@@ -31,7 +33,7 @@ public class Index extends AppCompatActivity {
         TurnOff = findViewById(R.id.button6);
         bleIm = findViewById(R.id.imageView2);
         exit = findViewById(R.id.button7);
-
+        mainactivity = this;
 
         StartScan.setVisibility(View.INVISIBLE);
         StopScan.setVisibility(View.INVISIBLE);
@@ -79,19 +81,19 @@ public class Index extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     if (!BluetoothCon.isEnabled()) {
-                        Toast.makeText(null, "Turning ON BLE", Toast.LENGTH_LONG).show();
+                        MainActivity.ShowToast(mainactivity,"Turning ON BLE");
                         Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivityForResult(intent, REQUEST_ENABLE_BT);
+                        mainactivity.startActivityForResult(intent, REQUEST_ENABLE_BT);
                         //Set visible  first 4 buttons
                         StartScan.setVisibility(View.VISIBLE);
                         StopScan.setVisibility(View.VISIBLE);
                         ConnectDev.setVisibility(View.VISIBLE);
                         DisconnectDev.setVisibility(View.VISIBLE);
                     } else {
-                        Toast.makeText(null, "BLE is already ON", Toast.LENGTH_LONG).show();
+                        MainActivity.ShowToast(mainactivity,"BLE technology is already ON");
                     }
                 } catch (Exception error) {
-                    Toast.makeText(null, "Error : " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    MainActivity.ShowToast(mainactivity,""+error.getMessage());
                 }
 
 

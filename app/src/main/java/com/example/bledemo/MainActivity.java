@@ -2,6 +2,8 @@ package com.example.bledemo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothClass;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,9 +25,10 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements BLEManagerCallerInterface {
-
+    private static int REQUEST_ENABLE_BTN = 0;
     public BLEManager bleManager;
     private MainActivity mainActivity;
     public static LogManager logManager;
@@ -37,18 +40,41 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mainActivity = this;
 
         logManager.addRegister("Aplication initiated.");
         FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton start =findViewById(R.id.TurnOn);
+        //DESHABILITA BLUETOOTH
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(bleManager!=null){
-                    bleManager.scanDevices();
+                    bleManager.bluetoothoff();
+                    ShowToast(mainActivity,"Turn OFF BLE technology");
+                    bleManager = new BLEManager(mainActivity,mainActivity);
+                }else {
+                    ShowToast(mainActivity,"BLE is already OFF");
                 }
+
             }
         });
         bleManager=new BLEManager(this,this);
+        //HABILITAR BLUETOOTH
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(bleManager!=null){
+                    bleManager.enableBluetoothDevice(mainActivity,REQUEST_ENABLE_BTN);
+                    ShowToast(mainActivity,"Starting BLE technology");
+                }else{
+                    ShowToast(mainActivity,"BLE is already ON");
+
+                }
+            }
+        });
+
+
         if(!bleManager.isBluetoothOn()){
             bleManager.enableBluetoothDevice(this, 1001);
         }else{
@@ -76,8 +102,20 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id== R.id.action_StartScan){
+            bleManager.scanDevices();
+        }
+        if (id == R.id.action_logs){
+            Intent intent = new Intent(getApplicationContext(),LogActivity.class);
+            startActivity(intent);
+        }
+        if(id== R.id.action_DisconnectD){
 
+        }
 
+        if (id==R.id.action_StopScan){
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -168,5 +206,9 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
     public void ToLogActivity(MenuItem item) {
         Intent intent = new Intent(getApplicationContext(),LogActivity.class);
         startActivity(intent);
+    }
+
+    public static void ShowToast(Context context, String msg){
+        Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
     }
 }

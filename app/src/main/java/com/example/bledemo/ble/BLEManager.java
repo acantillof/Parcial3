@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.bledemo.MainActivity;
 import com.example.bledemo.R;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.List;
 public class BLEManager extends ScanCallback {
     BLEManagerCallerInterface caller;
     Context context;
+    private static int REQUEST_ENABLE_BTN=0;
 
     BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
@@ -123,7 +125,19 @@ public class BLEManager extends ScanCallback {
         }
     }
 
+    public void bluetoothoff(){
+        bluetoothAdapter.disable();
+    }
 
+    public void bluetoothON(Activity activity){
+        try{
+
+        }catch(Exception error){
+
+        }
+        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        activity.startActivityForResult(intent,REQUEST_ENABLE_BTN);
+    }
 
     public void scanDevices(){
         try{
