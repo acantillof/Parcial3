@@ -21,6 +21,7 @@ public class Index extends AppCompatActivity {
     BluetoothAdapter BluetoothCon;
     ImageView bleIm;
     TextView INF;
+    private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISABLE_BT = 2;
@@ -55,6 +56,7 @@ public class Index extends AppCompatActivity {
             exit.setVisibility(View.VISIBLE);
         } else {
             INF.setText("---BLE is available ---");
+
         }
 
 
