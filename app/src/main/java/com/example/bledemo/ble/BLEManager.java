@@ -45,7 +45,7 @@ public class BLEManager extends ScanCallback {
     public List<ScanResult> scanResults=new ArrayList<>();
     BluetoothGattCallback prueba;
     BluetoothGatt lastBluetoothGatt;
-    prueba
+
     public BLEManager(BLEManagerCallerInterface caller, Context context) {
         this.caller = caller;
         this.context = context;
@@ -207,7 +207,7 @@ public class BLEManager extends ScanCallback {
     public void connectToGATTServer(BluetoothDevice device){
         try{
 
-            device.connectGatt(this.context,false,this).
+
             device.connectGatt(this.context, false, new BluetoothGattCallback() {
 
 
