@@ -2,6 +2,7 @@ package com.example.bledemo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
 
     @Override
     public void scanFailed(int error) {
-
+        ShowToast(mainActivity,"Error realizando el scanner");
     }
 
     @Override

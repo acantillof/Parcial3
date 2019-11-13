@@ -23,7 +23,6 @@ public class Index extends AppCompatActivity {
     TextView INF;
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
-    private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISABLE_BT = 2;
 
     private  BroadcastReceiver mReceiver;
