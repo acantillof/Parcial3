@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
             return true;
         }
 
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
 
     @Override
     public void scanStoped() {
+
 
     }
 
