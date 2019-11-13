@@ -2,10 +2,13 @@ package com.example.bledemo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -31,20 +34,23 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
     private static int REQUEST_ENABLE_BTN = 0;
     public BLEManager bleManager;
     private MainActivity mainActivity;
-    public static LogManager logManager;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        logManager = new LogManager();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        listView= (ListView)findViewById(R.id.devices_list_id);
         setSupportActionBar(toolbar);
         mainActivity = this;
 
-        logManager.addRegister("Aplication initiated.");
         FloatingActionButton fab = findViewById(R.id.fab);
         FloatingActionButton start =findViewById(R.id.TurnOn);
+
+
+
+
         //DESHABILITA BLUETOOTH
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,18 +109,22 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
             return true;
         }
         if (id== R.id.action_StartScan){
+
+            Index.logManager.addRegister("Scanning....");
             bleManager.scanDevices();
+
         }
         if (id == R.id.action_logs){
             Intent intent = new Intent(getApplicationContext(),LogActivity.class);
             startActivity(intent);
         }
         if(id== R.id.action_DisconnectD){
-
+            Index.logManager.addRegister("Disconected device.");
         }
 
         if (id==R.id.action_StopScan){
-
+            Index.logManager.addRegister("Stop scan.");
+            bleManager.stopScanDevices();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -175,12 +185,19 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
     @Override
     public void scanStoped() {
 
-
     }
 
     @Override
     public void scanFailed(int error) {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bleManager.scanResults.clear();
+                BluetoothDeviceListAdapter adapter=new BluetoothDeviceListAdapter(getApplicationContext(),bleManager.scanResults,mainActivity);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -189,10 +206,9 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
             @Override
             public void run() {
                 try{
-                    ListView listView= (ListView)findViewById(R.id.devices_list_id);
+                    //ListView listView= (ListView)findViewById(R.id.devices_list_id);
                     BluetoothDeviceListAdapter adapter=new BluetoothDeviceListAdapter(getApplicationContext(),bleManager.scanResults,mainActivity);
                     listView.setAdapter(adapter);
-
                 }catch (Exception error){
 
                 }

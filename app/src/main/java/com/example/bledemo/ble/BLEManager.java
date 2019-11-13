@@ -26,6 +26,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.bledemo.Index;
 import com.example.bledemo.MainActivity;
 import com.example.bledemo.R;
 
@@ -151,11 +152,23 @@ public class BLEManager extends ScanCallback {
         }
     }
 
+    public void stopScanDevices(){
+        try {
+            scanResults.clear();
+            bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
+            bluetoothLeScanner.stopScan(this);
+            caller.scanStoped();
+        }catch (Exception e){
+
+        }
+    }
+
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
         if(!isResultAlreadyAtList(result)) {
             scanResults.add(result);
         }
+        Index.logManager.addRegister("Device detected.");
         caller.newDeviceDetected();
 
     }
@@ -167,6 +180,8 @@ public class BLEManager extends ScanCallback {
 
     @Override
     public void onScanFailed(int errorCode) {
+
+        Index.logManager.addRegister("Scan failed.");
         caller.scanFailed(errorCode);
     }
 
@@ -213,9 +228,12 @@ public class BLEManager extends ScanCallback {
                                                     int status, int newState) {
                     super.onConnectionStateChange(gatt, status, newState);
                     if(newState==BluetoothGatt.STATE_CONNECTED){
-                        Toast.makeText(context,"Device Connected",Toast.LENGTH_LONG).show();
-                        Log.d("","");
+                        Index.logManager.addRegister("Device Connected.");
+                        //Toast.makeText(context,"Device Connected",Toast.LENGTH_LONG).show();
                         gatt.discoverServices();
+                    }
+                    if(newState==BluetoothGatt.STATE_DISCONNECTED){
+                        Index.logManager.addRegister("Device Connected.");
                     }
                 }
 
