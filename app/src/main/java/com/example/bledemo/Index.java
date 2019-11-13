@@ -4,8 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,12 +19,14 @@ import android.widget.Toast;
 public class Index extends AppCompatActivity {
     Button StartScan, StopScan, ConnectDev, DisconnectDev, TurnOn, TurnOff, exit;
     BluetoothAdapter BluetoothCon;
-    Activity mainactivity;
     ImageView bleIm;
     TextView INF;
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
+    private static final int REQUEST_ENABLE_BT = 0;
+    private static final int REQUEST_DISABLE_BT = 2;
 
+    private  BroadcastReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +39,7 @@ public class Index extends AppCompatActivity {
         TurnOff = findViewById(R.id.button6);
         bleIm = findViewById(R.id.imageView2);
         exit = findViewById(R.id.button7);
-        mainactivity = this;
+
 
         StartScan.setVisibility(View.INVISIBLE);
         StopScan.setVisibility(View.INVISIBLE);
@@ -56,13 +62,63 @@ public class Index extends AppCompatActivity {
 
         //Check if Bluetooth is ON or Not
         if (BluetoothCon.isEnabled()) {
+            StartScan.setVisibility(View.VISIBLE);
+            StopScan.setVisibility(View.VISIBLE);
+            ConnectDev.setVisibility(View.VISIBLE);
+            DisconnectDev.setVisibility(View.VISIBLE);
             bleIm.setImageResource(R.drawable.ic_action_blue);
+            TurnOff.setVisibility(View.VISIBLE);
+            TurnOn.setVisibility(View.GONE);
         } else {
             bleIm.setImageResource(R.drawable.ic_action_bleoff);
+            TurnOff.setVisibility(View.GONE);
+            TurnOn.setVisibility(View.VISIBLE);
         }
 
 
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+
+                if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                    final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                            BluetoothAdapter.ERROR);
+                    switch (state) {
+                        case BluetoothAdapter.STATE_OFF:
+                            StartScan.setVisibility(View.INVISIBLE);
+                            StopScan.setVisibility(View.INVISIBLE);
+                            ConnectDev.setVisibility(View.INVISIBLE);
+                            DisconnectDev.setVisibility(View.INVISIBLE);
+                            bleIm.setImageResource(R.drawable.ic_action_bleoff);
+                            TurnOn.setVisibility(View.VISIBLE);
+                            TurnOff.setVisibility(View.GONE);
+//                            Toast.makeText(getApplicationContext(), "Turning OFF BLE", Toast.LENGTH_LONG);
+
+                            break;
+                        case BluetoothAdapter.STATE_TURNING_OFF:
+                            break;
+                        case BluetoothAdapter.STATE_ON:
+                            StartScan.setVisibility(View.VISIBLE);
+                            StopScan.setVisibility(View.VISIBLE);
+                            ConnectDev.setVisibility(View.VISIBLE);
+                            DisconnectDev.setVisibility(View.VISIBLE);
+                            bleIm.setImageResource(R.drawable.ic_action_blue);
+                            TurnOn.setVisibility(View.GONE);
+                            TurnOff.setVisibility(View.VISIBLE);
+
+                        case BluetoothAdapter.STATE_TURNING_ON:
+                            break;
+                    }
+                }
+            }
+        };
         //Start Scan and change to MainActivity
+
+
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
+
 
         StartScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,19 +137,18 @@ public class Index extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     if (!BluetoothCon.isEnabled()) {
-                        MainActivity.ShowToast(mainactivity,"Turning ON BLE");
+                        Toast.makeText(getApplicationContext(), "Turning ON BLE", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        mainactivity.startActivityForResult(intent, REQUEST_ENABLE_BT);
+                        startActivityForResult(intent, REQUEST_ENABLE_BT);
+
+
                         //Set visible  first 4 buttons
-                        StartScan.setVisibility(View.VISIBLE);
-                        StopScan.setVisibility(View.VISIBLE);
-                        ConnectDev.setVisibility(View.VISIBLE);
-                        DisconnectDev.setVisibility(View.VISIBLE);
+
                     } else {
-                        MainActivity.ShowToast(mainactivity,"BLE technology is already ON");
+                        Toast.makeText(getApplicationContext(), "BLE is already ON", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception error) {
-                    MainActivity.ShowToast(mainactivity,""+error.getMessage());
+                    Toast.makeText(getApplicationContext(), "Error : " + error.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
 
@@ -110,11 +165,11 @@ public class Index extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (BluetoothCon.isEnabled()) {
+
                     BluetoothCon.disable();
-                    Toast.makeText(null, "Tuning OFF BLE", Toast.LENGTH_LONG);
-                    bleIm.setImageResource(R.drawable.ic_action_bleoff);
+
                 } else {
-                    Toast.makeText(null, "BLE is already OFF", Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(), "BLE is already OFF", Toast.LENGTH_LONG);
                 }
 
 
@@ -133,4 +188,39 @@ public class Index extends AppCompatActivity {
 
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try{
+            if(requestCode == REQUEST_ENABLE_BT){
+                if(resultCode == Activity.RESULT_OK){
+
+                }else{
+
+                }
+            }
+            if(requestCode == REQUEST_DISABLE_BT){
+                if(resultCode == Activity.RESULT_OK){
+
+                }
+            }
+
+
+        }catch (Exception error){
+
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        /* ... */
+
+        // Unregister broadcast listeners
+        unregisterReceiver(mReceiver);
+    }
+
 }

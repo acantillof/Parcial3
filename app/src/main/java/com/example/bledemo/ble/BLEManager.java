@@ -20,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -209,6 +210,7 @@ public class BLEManager extends ScanCallback {
                     super.onConnectionStateChange(gatt, status, newState);
                     if(newState==BluetoothGatt.STATE_CONNECTED){
                         Toast.makeText(context,"Device Connected",Toast.LENGTH_LONG).show();
+                        Log.d("","");
                         gatt.discoverServices();
                     }
                 }

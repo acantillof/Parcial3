@@ -5,7 +5,7 @@
     <string name="action_Connect">Connect BLE Device</string>
     <string name="action_StopLEScan">Stop BLE Scan</string>
     <string name="action_Disconnect">Disconnect BLE Device</string>
-    <string name="action_logs">View logs</string>
+    <string name="action_logs">Show logs</string>
     <string name="action_TurnOn">Turn On</string>
     <string name="action_TurnOff">Turn Off</string>
 </resources>
