@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import com.example.bledemo.Index;
 import com.example.bledemo.MainActivity;
 import com.example.bledemo.R;
+import com.example.bledemo.ServiceActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,11 @@ public class BLEManager extends ScanCallback {
     BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
+    public static int dev = 1;
     public List<ScanResult> scanResults=new ArrayList<>();
     BluetoothGattCallback prueba;
-    BluetoothGatt lastBluetoothGatt;
+    public static BluetoothGatt lastBluetoothGatt;
+
 
     public BLEManager(BLEManagerCallerInterface caller, Context context) {
         this.caller = caller;
@@ -153,7 +156,7 @@ public class BLEManager extends ScanCallback {
 
     public void stopScanDevices(){
         try {
-            scanResults.clear();
+            //scanResults.clear();
             bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
             bluetoothLeScanner.stopScan(this);
             caller.scanStoped();
@@ -167,7 +170,10 @@ public class BLEManager extends ScanCallback {
         if(!isResultAlreadyAtList(result)) {
             scanResults.add(result);
         }
-        Index.logManager.addRegister("Device detected.");
+        if (dev !=0) {
+            Index.logManager.addRegister("Devices detected.");
+            dev-=1;
+        }
         caller.newDeviceDetected();
 
     }
@@ -231,6 +237,7 @@ public class BLEManager extends ScanCallback {
                         Index.logManager.addRegister("Device Connected.");
                         //Toast.makeText(context,"Device Connected",Toast.LENGTH_LONG).show();
                         gatt.discoverServices();
+                        lastBluetoothGatt = gatt;
                     }
                     if(newState==BluetoothGatt.STATE_DISCONNECTED){
                         Index.logManager.addRegister("Device Connected.");
@@ -240,12 +247,15 @@ public class BLEManager extends ScanCallback {
                 @Override
                 public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                     super.onServicesDiscovered(gatt, status);
+                    searchAndSetAllNotifyAbleCharacteristics();
+
 
                 }
 
                 @Override
                 public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     super.onCharacteristicRead(gatt, characteristic, status);
+
                 }
 
                 @Override
@@ -256,6 +266,7 @@ public class BLEManager extends ScanCallback {
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                     super.onCharacteristicChanged(gatt, characteristic);
+                    MainActivity.ShowToast(context,"");
                 }
 
                 @Override
@@ -302,11 +313,13 @@ public class BLEManager extends ScanCallback {
                             if(currentCharacteristic!=null){
                                 if(isCharacteristicNotifiable(currentCharacteristic)){
                                     lastBluetoothGatt.setCharacteristicNotification(currentCharacteristic, true);
+
                                     for(BluetoothGattDescriptor currentDescriptor:currentCharacteristic.getDescriptors()){
                                         if(currentDescriptor!=null){
                                             try {
                                                 currentDescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                                                 lastBluetoothGatt.writeDescriptor(currentDescriptor);
+
                                             }catch (Exception internalError){
                                                 /*for (BluetoothHelperCallerInterface current:callers
                                                 ) {
@@ -320,8 +333,12 @@ public class BLEManager extends ScanCallback {
                             }
                         }
                     }
+
                 }
             }
+            Intent intent = new Intent(context.getApplicationContext(), ServiceActivity.class);
+            context.startActivity(intent);
+
         } catch (Exception error){
           /*  for (BluetoothHelperCallerInterface current:callers
             ) {

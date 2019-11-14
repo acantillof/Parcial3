@@ -33,7 +33,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements BLEManagerCallerInterface {
     private static int REQUEST_ENABLE_BTN = 0;
     public BLEManager bleManager;
-    private MainActivity mainActivity;
+    public MainActivity mainActivity;
     private ListView listView;
 
     @Override
@@ -184,21 +184,21 @@ public class MainActivity extends AppCompatActivity implements BLEManagerCallerI
 
     @Override
     public void scanStoped() {
-
-    }
-
-    @Override
-    public void scanFailed(int error) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                bleManager.scanResults.clear();
+ //               bleManager.scanResults.clear();
                 BluetoothDeviceListAdapter adapter=new BluetoothDeviceListAdapter(getApplicationContext(),bleManager.scanResults,mainActivity);
                 listView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
         });
         ShowToast(mainActivity,"Error realizando el scanner");
+    }
+
+    @Override
+    public void scanFailed(int error) {
+
     }
 
     @Override

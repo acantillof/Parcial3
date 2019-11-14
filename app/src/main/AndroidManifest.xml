@@ -13,8 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ServiceActivity"
-            android:label="Services"></activity>
+        <activity android:name=".CaracteristicActivity"></activity>
+        <activity
+            android:name=".ServiceActivity"
+            android:label="Services" />
         <activity
             android:name=".LogActivity"
             android:label="@string/action_logs"
@@ -29,7 +31,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
